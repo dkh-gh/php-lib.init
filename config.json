@@ -1,6 +1,6 @@
 {
 	"name": "init",
-	"version": 5.72,
+	"version": 5.73,
 	"source": {
 		"source": "github", 
 		"url": "dkh-gh/php-lib.init", 

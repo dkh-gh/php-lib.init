@@ -130,7 +130,7 @@
 			}
 		},
 		'clear_module' => function($module_name) {
-			$GLOBALS['_lib']['funcs']['debug']('clear_module', $module_name.': '.var_export($GLOBALS['_lib']['modules'][$module_name]['structure'], true));
+			$GLOBALS['_lib']['funcs']['debug']('clear_module', $module_name);
 			$dir_list = scandir($GLOBALS['_lib']['lib_path'].$module_name);
 			foreach($dir_list as $elem) {
 				if(true
