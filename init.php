@@ -153,7 +153,7 @@
 			for($i = 0; $i < count($GLOBALS['_lib']['modules'][$module_name]['requires']); $i++) {
 				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requires'][$i]);
 			}
-		}
+		},
 		'delete_dir' => function($dir_path) {
 			if (! is_dir($dir_path))
 				throw new InvalidArgumentException("$dir_path must be a directory");
