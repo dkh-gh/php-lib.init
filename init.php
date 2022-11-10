@@ -126,7 +126,7 @@
 								file_put_contents($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i], $remote_module_data_load);
 							}
 						}
-						else $GLOBALS['_lib']['funcs']['debug']('update_module', 'updating not needed.');
+						else $GLOBALS['_lib']['funcs']['debug']('update_module', 'updating not needed: local v '.$GLOBALS['_lib']['modules'][$module_name]['version'].', remote v '.$remote_module_data['version'].'.');
 					}
 				}
 			}
