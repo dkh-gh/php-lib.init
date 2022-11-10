@@ -112,7 +112,7 @@
 					$remote_module_data = json_decode($remote_module_data, true);
 					if($remote_module_data) {
 						if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$module_name]['version']) {
-							$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update ver'.$GLOBALS['_lib']['modules'][$module_name]['version'].' > ver'.$remote_module_data['version'].'.');
+							$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' >>> '.$remote_module_data['version'].'.');
 							for($i = 0; $i < count($remote_module_data['structure']); $i++) {
 								$GLOBALS['_lib']['funcs']['debug']('update_module', 'updating '.$remote_module_data['structure'][$i]);
 								$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
