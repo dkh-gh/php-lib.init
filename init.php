@@ -150,8 +150,8 @@
 			}
 		},
 		'check_module_requirements' => function($module_name) {
-			for($i = 0; $i < count($GLOBALS['_lib']['modules'][$module_name]['requires']); $i++) {
-				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requires'][$i]);
+			for($i = 0; $i < count($GLOBALS['_lib']['modules'][$module_name]['requirements']); $i++) {
+				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]);
 			}
 		},
 		'delete_dir' => function($dir_path) {
