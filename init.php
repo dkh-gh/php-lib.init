@@ -1,5 +1,5 @@
 <?php
-	
+	// TODO: test needed files
 	$_lib = [
 		'path' => explode('/', __FILE__),
 		'lib_path' => '/',
@@ -113,18 +113,7 @@
 					if($remote_module_data) {
 						if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$module_name]['version']) {
 							$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' >>> '.$remote_module_data['version'].'.');
-							for($i = 0; $i < count($remote_module_data['structure']); $i++) {
-								$GLOBALS['_lib']['funcs']['debug']('update_module', 'updating '.$remote_module_data['structure'][$i]);
-								$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
-									$GLOBALS['_lib']['modules'][$module_name]['source']['url'].
-									"/".$GLOBALS['_lib']['modules'][$module_name]['source']['branch'].
-									"/".$remote_module_data['structure'][$i], "rb");
-								$remote_module_data_load = stream_get_contents($remote_module_file_load);
-								fclose($remote_module_file_load);
-								if(file_exists($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i]))
-									unlink($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i]);
-								file_put_contents($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i], $remote_module_data_load);
-							}
+							$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
 						}
 						else $GLOBALS['_lib']['funcs']['debug']('update_module', 'updating not needed: local v '.$GLOBALS['_lib']['modules'][$module_name]['version'].', remote v '.$remote_module_data['version'].'.');
 					}
@@ -151,8 +140,41 @@
 		},
 		'check_module_requirements' => function($module_name) {
 			for($i = 0; $i < count($GLOBALS['_lib']['modules'][$module_name]['requirements']); $i++) {
-				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['name']);
+				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['name'].' from'.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source']);
+				if($GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source'] == github) {
+					$remote_module_file = fopen("https://raw.githubusercontent.com/".
+					$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['url'].
+					"/".$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['branch'].
+					"/config.json", "rb");
+					$remote_module_data = stream_get_contents($remote_module_file);
+					fclose($remote_module_file);
+					if($remote_module_data) {
+						$remote_module_data = json_decode($remote_module_data, true);
+						if($remote_module_data) {
+							if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$module_name]['version']) {
+								$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' >>> '.$remote_module_data['version'].'.');
+								$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
+							}
+						}
+					}
+				}
 			}
+		},
+		'install_module_github' => function($remote_module_data) {
+			$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'installing module '.$remote_module_data['name'].' v '.$remote_module_data['version']);
+			for($i = 0; $i < count($remote_module_data['structure']); $i++) {
+				$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'updating '.$remote_module_data['structure'][$i]);
+				$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
+					$GLOBALS['_lib']['modules'][$module_name]['source']['url'].
+					"/".$GLOBALS['_lib']['modules'][$module_name]['source']['branch'].
+					"/".$remote_module_data['structure'][$i], "rb");
+				$remote_module_data_load = stream_get_contents($remote_module_file_load);
+				fclose($remote_module_file_load);
+				if(file_exists($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i]))
+					unlink($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i]);
+				file_put_contents($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i], $remote_module_data_load);
+			}
+			return true;
 		},
 		'delete_dir' => function($dir_path) {
 			if (! is_dir($dir_path))
