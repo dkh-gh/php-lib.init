@@ -1,6 +1,6 @@
 {
 	"name": "init",
-	"version": 1,
+	"version": 2,
 	"source": {
 		"source": "github", 
 		"url": "dkh-gh/php-lib.init", 
@@ -11,7 +11,7 @@
 		"init.php",
 		"config.json"
 	],
-	"include_needed": true,
+	"include_needed": false,
 	"developers": {
 		"creator": {
 			"name": "dkh"
