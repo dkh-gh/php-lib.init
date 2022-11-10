@@ -141,7 +141,7 @@
 		'check_module_requirements' => function($module_name) {
 			for($i = 0; $i < count($GLOBALS['_lib']['modules'][$module_name]['requirements']); $i++) {
 				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['name'].' from'.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source']);
-				if($GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source'] == github) {
+				if($GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source'] == "github") {
 					$remote_module_file = fopen("https://raw.githubusercontent.com/".
 					$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['url'].
 					"/".$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['branch'].
