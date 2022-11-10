@@ -140,7 +140,7 @@
 		},
 		'check_module_requirements' => function($module_name) {
 			for($i = 0; $i < count($GLOBALS['_lib']['modules'][$module_name]['requirements']); $i++) {
-				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['name'].' from'.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source']);
+				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['name'].' from '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source']);
 				if($GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source'] == "github") {
 					$remote_module_file = fopen("https://raw.githubusercontent.com/".
 					$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['url'].
@@ -153,18 +153,18 @@
 						if($remote_module_data) {
 							if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$module_name]['version']) {
 								$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' >>> '.$remote_module_data['version'].'.');
-								$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
+								$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data, true);
 							}
 						}
 					}
 				}
 			}
 		},
-		'install_module_github' => function($remote_module_data) {
+		'install_module_github' => function($remote_module_data, $anyway=false) {
 			$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'installing module '.$remote_module_data['name'].' v '.$remote_module_data['version']);
 			// for($i = 0; $i < count($remote_module_data['structure']); $i++) {
 			$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'looking '.$remote_module_data['name'].' in installed');
-			if(in_array($remote_module_data['name'], array_keys($GLOBALS['_lib']['modules'])))
+			if(in_array($remote_module_data['name'], array_keys($GLOBALS['_lib']['modules'])) && !$anyway)
 				$GLOBALS['_lib']['funcs']['debug']('install_module_github', $remote_module_data['name'].' is already installed');
 			else {
 				$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
