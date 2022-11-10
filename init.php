@@ -162,17 +162,23 @@
 		},
 		'install_module_github' => function($remote_module_data) {
 			$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'installing module '.$remote_module_data['name'].' v '.$remote_module_data['version']);
-			for($i = 0; $i < count($remote_module_data['structure']); $i++) {
-				$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'updating '.$remote_module_data['structure'][$i]);
+			// for($i = 0; $i < count($remote_module_data['structure']); $i++) {
+			$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'looking '.$remote_module_data['name'].' in installed');
+			if(in_array($remote_module_data['name'], array_keys($GLOBALS['_lib']['modules'])))
+				$GLOBALS['_lib']['funcs']['debug']('install_module_github', $remote_module_data['name'].' is already installed');
+			else {
 				$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
-					$GLOBALS['_lib']['modules'][$module_name]['source']['url'].
-					"/".$GLOBALS['_lib']['modules'][$module_name]['source']['branch'].
-					"/".$remote_module_data['structure'][$i], "rb");
-				$remote_module_data_load = stream_get_contents($remote_module_file_load);
+					$remote_module_data['url'].
+					"/".$remote_module_data['branch'].
+					"/config.json", "rb");
+				$remote_module_data_loaded = stream_get_contents($remote_module_file_load);
 				fclose($remote_module_file_load);
-				if(file_exists($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i]))
-					unlink($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i]);
-				file_put_contents($GLOBALS['_lib']['lib_path'].$module_name.'/'.$remote_module_data['structure'][$i], $remote_module_data_load);
+				for($i = 0; $i < count($remote_module_data_loaded['structure']); $i++) {
+					if(file_exists($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$remote_module_data_loaded['structure'][$i]))
+						unlink($GLOBALS['_lib']['lib_path'].$remote_module_data['name'].'/'.$remote_module_data['structure'][$i]);
+					file_put_contents($GLOBALS['_lib']['lib_path'].$remote_module_data['name'].'/'.$remote_module_data['structure'][$i], $remote_module_data_load);
+				}
+				$GLOBALS['_lib']['funcs']['debug']('install_module_github', $remote_module_data['name'].' installed from github.');
 			}
 			return true;
 		},
