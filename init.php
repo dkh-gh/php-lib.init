@@ -80,6 +80,7 @@
 				}
 			}
 			$GLOBALS['_lib']['funcs']['check_modules']();
+			$GLOBALS['_lib']['funcs']['including_modules']();
 		},
 		'check_modules' => function() {
 			$GLOBALS['_lib']['funcs']['debug']('check_modules', 'modules array count: '.count($GLOBALS['_lib']['modules']));
@@ -206,6 +207,17 @@
 				}
 			}
 			return true;
+		},
+		'including_modules' => function() {
+			for($i = 0; $i < count(array_keys($GLOBALS['_lib']['modules'])); $i++) {
+				// var_dump(isset($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]));
+				if(isset($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['include_needed'])) {
+					if($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['include_needed']) {
+						$GLOBALS['_lib']['funcs']['debug']('including_modules', 'including '.$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
+						include $GLOBALS['_lib']['lib_path'].$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name'].'/'.$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name'].'.php';
+					}
+				}
+			}
 		},
 		'delete_dir' => function($dir_path) {
 			if (! is_dir($dir_path))
