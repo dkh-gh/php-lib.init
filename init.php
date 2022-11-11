@@ -144,7 +144,15 @@
 				&& $elem != 'index.php'
 				&& $elem != '..'
 				&& $elem != '.') {
+					$removing_module = false;
 					if(!in_array($elem, $GLOBALS['_lib']['modules'][$module_name]['structure'])) {
+						if(!isset($GLOBALS['_lib']['modules'][$module_name]['ignoring']))
+							$removing_module = true;
+						else
+							if(!in_array($elem, $GLOBALS['_lib']['modules'][$module_name]['ignoring']))
+								$removing_module = true;
+					}
+					if($removing_module) {
 						if(is_dir($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem)) {
 							$GLOBALS['_lib']['funcs']['debug']('clear_module', 'deleting: '.$GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem.';');
 							$GLOBALS['_lib']['funcs']['delete_dir']($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem);
@@ -201,14 +209,18 @@
 						$GLOBALS['_lib']['funcs']['delete_dir']($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
 					mkdir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
 					for($i = 0; $i < count($remote_module_data_loaded['structure']); $i++) {
-						$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
-							$remote_module_data['url'].
-							"/".$remote_module_data['branch'].
-							"/".$remote_module_data_loaded['structure'][$i], "rb");
-						$remote_module_file_loaded = stream_get_contents($remote_module_file_load);
-						fclose($remote_module_file_load);
-						if($remote_module_file_loaded) {
-							file_put_contents($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$remote_module_data_loaded['structure'][$i], $remote_module_file_loaded);
+						if(isset($remote_module_data_loaded['ignoring'])) {
+							if(!in_array($remote_module_data_loaded['structure'][$i], $remote_module_data_loaded['ignoring'])) {
+								$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
+									$remote_module_data['url'].
+									"/".$remote_module_data['branch'].
+									"/".$remote_module_data_loaded['structure'][$i], "rb");
+								$remote_module_file_loaded = stream_get_contents($remote_module_file_load);
+								fclose($remote_module_file_load);
+								if($remote_module_file_loaded) {
+									file_put_contents($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$remote_module_data_loaded['structure'][$i], $remote_module_file_loaded);
+								}
+							}
 						}
 					}
 					$GLOBALS['_lib']['funcs']['add_module']($remote_module_data_loaded['name']);
@@ -219,7 +231,6 @@
 		},
 		'including_modules' => function() {
 			for($i = 0; $i < count(array_keys($GLOBALS['_lib']['modules'])); $i++) {
-				// var_dump(isset($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]));
 				if(isset($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['include_needed'])) {
 					if($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['include_needed']) {
 						$GLOBALS['_lib']['funcs']['debug']('including_modules', 'including '.$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
