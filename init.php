@@ -214,8 +214,8 @@
 						for($i = 0; $i < $dir_list; $i++) {
 							$removing_element = true;
 							if(false
-							|| $elem == '..'
-							|| $elem == '.')
+							|| $dir_list[$i] == '..'
+							|| $dir_list[$i] == '.')
 								$removing_element = false;
 							if(isset($dir_list[$i], $remote_module_data_loaded['ignoring']))
 								if(!in_array($dir_list[$i], $remote_module_data_loaded['ignoring']))
