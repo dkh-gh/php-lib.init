@@ -145,7 +145,6 @@
 			$dir_list = scandir($GLOBALS['_lib']['lib_path'].$module_name);
 			foreach($dir_list as $elem) {
 				if(true
-				&& $elem != 'index.php'
 				&& $elem != '..'
 				&& $elem != '.') {
 					$removing_module = false;
@@ -210,9 +209,32 @@
 			if($remote_module_file_loaded) {
 				$remote_module_data_loaded = json_decode($remote_module_file_loaded, true);
 				if($remote_module_data_loaded) {
-					if(is_dir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']))
-						$GLOBALS['_lib']['funcs']['delete_dir']($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
-					mkdir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
+					if(is_dir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'])) {
+						$dir_list = scandir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
+						for($i = 0; $i < $dir_list; $i++) {
+							$removing_element = true;
+							if(false
+							|| $elem == '..'
+							|| $elem == '.')
+								$removing_element = false;
+							if(isset($dir_list[$i], $remote_module_data_loaded['ignoring']))
+								if(!in_array($dir_list[$i], $remote_module_data_loaded['ignoring']))
+									$removing_element = false;
+							if($removing_element) {
+								$elem_path = $GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$dir_list[$i];
+								if(is_dir($elem_path)) {
+									$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'removing old dir '.$elem_path);
+									$GLOBALS['_lib']['funcs']['delete_dir']($elem_path);
+								}
+								elseif(file_exists($elem_path)) {
+									$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'removing old file '.$elem_path);
+									unlink($elem_path);
+								}
+							}
+						}
+					}
+					if(!is_dir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']))
+						mkdir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
 					for($i = 0; $i < count($remote_module_data_loaded['structure']); $i++) {
 						$installing_file = true;
 						if(isset($remote_module_data_loaded['ignoring']))
