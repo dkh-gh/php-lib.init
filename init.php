@@ -117,7 +117,7 @@
 					$remote_module_data = json_decode($remote_module_data, true);
 					if($remote_module_data) {
 						if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$module_name]['version']) {
-							$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' >>> '.$remote_module_data['version'].'.');
+							$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' -> '.$remote_module_data['version'].'.');
 							$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
 						}
 						else {
@@ -175,7 +175,7 @@
 								$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'] = -1;
 							}
 							if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$remote_module_data['name']]['version']) {
-								$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'].' >>> '.$remote_module_data['version'].'.');
+								$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'].' -> '.$remote_module_data['version'].'.');
 								$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
 							}
 							else $GLOBALS['_lib']['funcs']['debug']('update_module', 'updating not needed: local v '.$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'].', remote v '.$remote_module_data['version'].'.');
