@@ -218,7 +218,7 @@
 							|| $dir_list[$i] == '.')
 								$removing_element = false;
 							if(isset($dir_list[$i], $remote_module_data_loaded['ignoring']))
-								if(!in_array($dir_list[$i], $remote_module_data_loaded['ignoring']))
+								if(in_array($dir_list[$i], $remote_module_data_loaded['ignoring']))
 									$removing_element = false;
 							if($removing_element) {
 								$elem_path = $GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$dir_list[$i];
