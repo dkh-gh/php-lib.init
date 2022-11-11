@@ -211,7 +211,7 @@
 				if($remote_module_data_loaded) {
 					if(is_dir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'])) {
 						$dir_list = scandir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
-						for($i = 0; $i < $dir_list; $i++) {
+						for($i = 0; $i < count($dir_list); $i++) {
 							$removing_element = true;
 							if(false
 							|| $dir_list[$i] == '..'
