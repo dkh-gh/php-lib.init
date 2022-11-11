@@ -16,13 +16,16 @@
 			$now = DateTime::createFromFormat('U.u', microtime(true));
 			$timestamp = $now->format("\U\TC H:m:s.u d.m.Y");
 			$date_today = $now->format("Y_m_d");
+			$module_version = '?';
+			if(isset($GLOBALS['_lib']['modules']['init']['version']))
+				$module_version = $GLOBALS['_lib']['modules']['init']['version'];
 			if($GLOBALS['_lib']['debug_mode']) {
-				print('<div style="padding: 3px 2px;"><span style="font-family: sans-serif; float: left; font-size: 12px;display: table-cell;">['.$timestamp.' <span style="color: red; ">'.$module_name.
+				print('<div style="padding: 3px 2px;"><span style="font-family: sans-serif; float: left; font-size: 12px;display: table-cell;">['.$timestamp.' <span style="color: red; "> v'.$module_version.' '.$module_name.
 							'</span>]: </span><span style="display: table-cell; color: darkblue; font-family: sans-serif; font-size: 12px; margin: 0;">'.
 							$text.'</span></div>');
 			}
 			if($GLOBALS['_lib']['log_mode']) {
-				file_put_contents($GLOBALS['_lib']['lib_path'].'init/logs_'.$date_today.'.log', $timestamp.' '.$module_name.' > '.$text."\n", FILE_APPEND);
+				file_put_contents($GLOBALS['_lib']['lib_path'].'init/logs_'.$date_today.'.log', $timestamp.' v'.$module_version.' '.$module_name.' > '.$text."\n", FILE_APPEND);
 			}
 		},
 		'get_file_data' => function($file_name, $mode) {
@@ -75,6 +78,7 @@
 				return false;
 		},
 		'init_modules' => function() {
+			$GLOBALS['_lib']['funcs']['debug']('===', '===');
 			$dir_list = scandir($GLOBALS['_lib']['lib_path']);
 			foreach($dir_list as $module) {
 				if(true
@@ -95,18 +99,18 @@
 				$module_data = $GLOBALS['_lib']['funcs']['update_module']($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
 			}
 			for($i = 0; $i < count(array_keys($GLOBALS['_lib']['modules'])); $i++){
-				$GLOBALS['_lib']['funcs']['debug']('check_modules', 'clearing module '.$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
+				// $GLOBALS['_lib']['funcs']['debug']('check_modules', 'clearing module '.$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
 				$module_data = $GLOBALS['_lib']['funcs']['clear_module']($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
 			}
 			for($i = 0; $i < count(array_keys($GLOBALS['_lib']['modules'])); $i++){
-				$GLOBALS['_lib']['funcs']['debug']('check_modules', 'checking requirements for '.$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
+				// $GLOBALS['_lib']['funcs']['debug']('check_modules', 'checking requirements for '.$GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
 				$module_data = $GLOBALS['_lib']['funcs']['check_module_requirements']($GLOBALS['_lib']['modules'][array_keys($GLOBALS['_lib']['modules'])[$i]]['name']);
 			}
 		},
 		'update_module' => function($module_name) {
 			$GLOBALS['_lib']['funcs']['debug']('update_module', $module_name);
 			if($GLOBALS['_lib']['modules'][$module_name]['source']['source'] == 'github') {
-				$GLOBALS['_lib']['funcs']['debug']('update_module', 'looking new version in github.');
+				$GLOBALS['_lib']['funcs']['debug']('update_module', 'for module '.$module_name.' looking new version on github.');
 				$remote_module_file = fopen("https://raw.githubusercontent.com/".
 					$GLOBALS['_lib']['modules'][$module_name]['source']['url'].
 					"/".$GLOBALS['_lib']['modules'][$module_name]['source']['branch'].
@@ -117,7 +121,7 @@
 					$remote_module_data = json_decode($remote_module_data, true);
 					if($remote_module_data) {
 						if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$module_name]['version']) {
-							$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' -> '.$remote_module_data['version'].'.');
+							$GLOBALS['_lib']['funcs']['debug']('update_module', 'module '.$module_name.' need update: version '.$GLOBALS['_lib']['modules'][$module_name]['version'].' -> '.$remote_module_data['version'].'.');
 							$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
 						}
 						else {
@@ -126,11 +130,11 @@
 								if(!file_exists($GLOBALS['_lib']['lib_path'].$module_name.'/'.$GLOBALS['_lib']['modules'][$module_name]['structure'][$i]))
 									$module_structure_full = false;
 							if(!$module_structure_full) {
-								$GLOBALS['_lib']['funcs']['debug']('update_module', 'module '.$GLOBALS['_lib']['modules'][$module_name]['version'].' damaged, need reinstall.');
+								$GLOBALS['_lib']['funcs']['debug']('update_module', 'module '.$GLOBALS['_lib']['modules'][$module_name]['name'].' damaged, need reinstall.');
 								$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
 							}
 							else
-								$GLOBALS['_lib']['funcs']['debug']('update_module', 'updating not needed: local v '.$GLOBALS['_lib']['modules'][$module_name]['version'].', remote v '.$remote_module_data['version'].'.');
+								$GLOBALS['_lib']['funcs']['debug']('update_module', 'for module '.$module_name.' updating not needed: local v '.$GLOBALS['_lib']['modules'][$module_name]['version'].', remote v '.$remote_module_data['version'].'.');
 						}
 					}
 				}
@@ -166,6 +170,7 @@
 			}
 		},
 		'check_module_requirements' => function($module_name) {
+			$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', 'checking '.$module_name);
 			for($i = 0; $i < count($GLOBALS['_lib']['modules'][$module_name]['requirements']); $i++) {
 				$GLOBALS['_lib']['funcs']['debug']('check_module_requirements', $module_name.' require '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['name'].' from '.$GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source']);
 				if($GLOBALS['_lib']['modules'][$module_name]['requirements'][$i]['source'] == "github") {
@@ -183,10 +188,10 @@
 								$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'] = -1;
 							}
 							if($remote_module_data['version'] > $GLOBALS['_lib']['modules'][$remote_module_data['name']]['version']) {
-								$GLOBALS['_lib']['funcs']['debug']('update_module', 'need update version '.$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'].' -> '.$remote_module_data['version'].'.');
+								$GLOBALS['_lib']['funcs']['debug']('update_module', 'module '.$module_name.' need update: version '.$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'].' -> '.$remote_module_data['version'].'.');
 								$GLOBALS['_lib']['funcs']['install_module_github']($remote_module_data);
 							}
-							else $GLOBALS['_lib']['funcs']['debug']('update_module', 'updating not needed: local v '.$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'].', remote v '.$remote_module_data['version'].'.');
+							else $GLOBALS['_lib']['funcs']['debug']('update_module', 'for module '.$module_name.' updating not needed: local v '.$GLOBALS['_lib']['modules'][$remote_module_data['name']]['version'].', remote v '.$remote_module_data['version'].'.');
 						}
 					}
 				}
@@ -209,17 +214,19 @@
 						$GLOBALS['_lib']['funcs']['delete_dir']($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
 					mkdir($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name']);
 					for($i = 0; $i < count($remote_module_data_loaded['structure']); $i++) {
-						if(isset($remote_module_data_loaded['ignoring'])) {
-							if(!in_array($remote_module_data_loaded['structure'][$i], $remote_module_data_loaded['ignoring'])) {
-								$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
-									$remote_module_data['url'].
-									"/".$remote_module_data['branch'].
-									"/".$remote_module_data_loaded['structure'][$i], "rb");
-								$remote_module_file_loaded = stream_get_contents($remote_module_file_load);
-								fclose($remote_module_file_load);
-								if($remote_module_file_loaded) {
-									file_put_contents($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$remote_module_data_loaded['structure'][$i], $remote_module_file_loaded);
-								}
+						$installing_file = true;
+						if(isset($remote_module_data_loaded['ignoring']))
+							if(in_array($remote_module_data_loaded['structure'][$i], $remote_module_data_loaded['ignoring']))
+								$installing_file = false;
+						if($installing_file) {
+							$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
+								$remote_module_data['url'].
+								"/".$remote_module_data['branch'].
+								"/".$remote_module_data_loaded['structure'][$i], "rb");
+							$remote_module_file_loaded = stream_get_contents($remote_module_file_load);
+							fclose($remote_module_file_load);
+							if($remote_module_file_loaded) {
+								file_put_contents($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$remote_module_data_loaded['structure'][$i], $remote_module_file_loaded);
 							}
 						}
 					}
