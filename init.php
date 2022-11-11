@@ -4,7 +4,7 @@
 		'lib_path' => '/',
 		'modules' => [],
 		'debug_mode' => true,
-		'log_mode' => false,
+		'log_mode' => true,
 	];
 	for($i = 0; $i < count($_lib['path'])-2; $i++) {
 		if($_lib['path'][$i] != '')
@@ -13,11 +13,17 @@
 	unset($_lib['path']);
 	$_lib['funcs'] = [
 		'debug' => function($module_name, $text) {
+			$now = DateTime::createFromFormat('U.u', microtime(true));
+			$timestamp = $now->format("\U\TC H:m:s.u d.m.Y");
+			$date_today = $now->format("Y_m_d");
 			if($GLOBALS['_lib']['debug_mode']) {
-				print('<div><div style="font-family: sans-serif; float: left; font-size: 12px;">debug [<span style="color: red; ">'.$module_name.'</span>]: </div><div style="color: darkblue; font-family: sans-serif;"><pre style="font-family: sans-serif; font-size: 12px; margin: 0;">'.
-							$text.'</pre></div></div>');
+				print('<div style="padding: 3px 2px;"><span style="font-family: sans-serif; float: left; font-size: 12px;display: table-cell;">['.$timestamp.' <span style="color: red; ">'.$module_name.
+							'</span>]: </span><span style="display: table-cell; color: darkblue; font-family: sans-serif; font-size: 12px; margin: 0;">'.
+							$text.'</span></div>');
 			}
-			if($GLOBALS['_lib']['log_mode']) {}
+			if($GLOBALS['_lib']['log_mode']) {
+				file_put_contents($GLOBALS['_lib']['lib_path'].'init/logs_'.$date_today.'.log', $module_name.' > '.$text."\n", FILE_APPEND);
+			}
 		},
 		'get_file_data' => function($file_name, $mode) {
 			if( file_exists($GLOBALS['_lib']['lib_path'].$file_name) )
@@ -27,7 +33,7 @@
 				return $file_data;
 			}
 			if($mode == 'line') {
-				$file_data = str_replace("\n", '', $file_data);
+				$file_data = str_replace(["\n", "\t"], '', $file_data);
 			}
 			elseif($mode == 'requires') {
 				$file_data = explode("\n", $file_data);
@@ -139,11 +145,14 @@
 				&& $elem != '..'
 				&& $elem != '.') {
 					if(!in_array($elem, $GLOBALS['_lib']['modules'][$module_name]['structure'])) {
-						$GLOBALS['_lib']['funcs']['debug']('clear_module', 'deleting: '.$GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem.';');
-						if(is_dir($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem))
+						if(is_dir($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem)) {
+							$GLOBALS['_lib']['funcs']['debug']('clear_module', 'deleting: '.$GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem.';');
 							$GLOBALS['_lib']['funcs']['delete_dir']($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem);
-						elseif(file_exists($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem))
+						}
+						elseif(file_exists($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem) && substr($elem, -4) != '.log') {
+							$GLOBALS['_lib']['funcs']['debug']('clear_module', 'deleting: '.$GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem.';');
 							unlink($GLOBALS['_lib']['lib_path'].$module_name.'/'.$elem);
+						}
 					}
 				}
 			}
