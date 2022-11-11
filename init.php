@@ -3,7 +3,7 @@
 		'path' => explode('/', __FILE__),
 		'lib_path' => '/',
 		'modules' => [],
-		'debug_mode' => true,
+		'debug_mode' => false,
 		'log_mode' => true,
 	];
 	for($i = 0; $i < count($_lib['path'])-2; $i++) {
@@ -22,7 +22,7 @@
 							$text.'</span></div>');
 			}
 			if($GLOBALS['_lib']['log_mode']) {
-				file_put_contents($GLOBALS['_lib']['lib_path'].'init/logs_'.$date_today.'.log', $module_name.' > '.$text."\n", FILE_APPEND);
+				file_put_contents($GLOBALS['_lib']['lib_path'].'init/logs_'.$date_today.'.log', $timestamp.' '.$module_name.' > '.$text."\n", FILE_APPEND);
 			}
 		},
 		'get_file_data' => function($file_name, $mode) {
