@@ -1,10 +1,10 @@
 {
 	"name": "init",
-	"version": 5.973,
+	"version": 5.97301,
 	"source": {
 		"source": "github", 
 		"url": "dkh-gh/php-lib.init", 
-		"branch": "main"
+		"branch": "dev"
 	},
 	"requirements": [],
 	"structure": [
