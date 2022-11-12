@@ -1,10 +1,10 @@
 {
 	"name": "init",
-	"version": 5.97402,
+	"version": 5.97502,
 	"source": {
 		"source": "github", 
 		"url": "dkh-gh/php-lib.init", 
-		"branch": "dev"
+		"branch": "beta"
 	},
 	"requirements": [],
 	"structure": [
