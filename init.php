@@ -1,4 +1,5 @@
 <?php
+
 	$_lib = [
 		'path' => explode('/', __FILE__),
 		'lib_path' => '/',
@@ -52,7 +53,7 @@
 			return $file_data;
 		},
 		'get_module_data' => function($module_name) {
-			$GLOBALS['_lib']['funcs']['debug']('get_module_data', 'module: '.$module_name);
+			$GLOBALS['_lib']['funcs']['debug']('get_module_data', 'trying to get data from module '.$module_name);
 			$module_data = false;
 			if( file_exists($GLOBALS['_lib']['lib_path'].$module_name.'/config.json') ) {
 				$file_data = $GLOBALS['_lib']['funcs']['get_file_data']($module_name.'/config.json', 'line');
