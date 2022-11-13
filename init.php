@@ -1,5 +1,12 @@
 <?php
 
+	/*
+	 * TODO:
+	 *  - requires.json
+	 *  - not found file on github = fatal error
+	 *  - auto repairing init.php
+	 */
+
 	$_lib = [
 		'path' => explode('/', __FILE__),
 		'lib_path' => '/',
@@ -83,15 +90,48 @@
 			$dir_list = scandir($GLOBALS['_lib']['lib_path']);
 			foreach($dir_list as $module) {
 				if(true
-				&& $module != 'index.php'
+				&& $module != 'requirements.json'
+				&& $module != 'requirements.json.old'
 				&& $module != '..'
-				&& $module != '.') {
+				&& $module != '.'
+				) {
 					$GLOBALS['_lib']['funcs']['debug']('init_modules', $module);
 					$GLOBALS['_lib']['funcs']['add_module']($module);
 				}
 			}
 			$GLOBALS['_lib']['funcs']['check_modules']();
 			$GLOBALS['_lib']['funcs']['including_modules']();
+			if(file_exists($GLOBALS['_lib']['lib_path'].'requirements.json'))
+				$GLOBALS['_lib']['funcs']['install_global_requirements']();
+		},
+		'install_global_requirements' => function() {
+			if(file_exists($GLOBALS['_lib']['lib_path'].'requirements.json')) {
+				$global_requirements = file_get_contents($GLOBALS['_lib']['lib_path'].'requirements.json');
+				if($global_requirements) {
+					$global_requirements = json_decode($global_requirements, true);
+					if($global_requirements) {
+						for($i=0; $i < count($global_requirements); $i++) { 
+							if(true
+								&& isset($global_requirements[$i])
+								&& isset($global_requirements[$i]['name'])
+								&& isset($global_requirements[$i]['source'])
+								&& isset($global_requirements[$i]['url'])
+								&& isset($global_requirements[$i]['branch'])
+							) {
+								if($global_requirements[$i]['source'] == 'github')
+									$GLOBALS['_lib']['funcs']['install_module_github']($global_requirements[$i]);
+							}
+						}
+						rename($GLOBALS['_lib']['lib_path'].'requirements.json', $GLOBALS['_lib']['lib_path'].'requirements.json.bak')
+					}
+					else
+						return false;
+				}
+				else
+					return false;
+			}
+			else
+				return false;
 		},
 		'check_modules' => function() {
 			$GLOBALS['_lib']['funcs']['debug']('check_modules', 'modules array count: '.count($GLOBALS['_lib']['modules']));
