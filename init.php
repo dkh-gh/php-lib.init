@@ -2,8 +2,6 @@
 
 	/*
 	 * TODO:
-	 *  - requires.json
-	 *  - not found file on github = fatal error
 	 *  - auto repairing init.php
 	 */
 
@@ -282,14 +280,19 @@
 							if(in_array($remote_module_data_loaded['structure'][$i], $remote_module_data_loaded['ignoring']))
 								$installing_file = false;
 						if($installing_file) {
-							$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
-								$remote_module_data['url'].
-								"/".$remote_module_data['branch'].
-								"/".$remote_module_data_loaded['structure'][$i], "rb");
-							$remote_module_file_loaded = stream_get_contents($remote_module_file_load);
-							fclose($remote_module_file_load);
-							if($remote_module_file_loaded) {
-								file_put_contents($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$remote_module_data_loaded['structure'][$i], $remote_module_file_loaded);
+							try {
+								$remote_module_file_load = fopen("https://raw.githubusercontent.com/".
+									$remote_module_data['url'].
+									"/".$remote_module_data['branch'].
+									"/".$remote_module_data_loaded['structure'][$i], "rb");
+								$remote_module_file_loaded = stream_get_contents($remote_module_file_load);
+								fclose($remote_module_file_load);
+								if($remote_module_file_loaded) {
+									file_put_contents($GLOBALS['_lib']['lib_path'].$remote_module_data_loaded['name'].'/'.$remote_module_data_loaded['structure'][$i], $remote_module_file_loaded);
+								}
+							}
+							catch (Exception $e) {
+								$GLOBALS['_lib']['funcs']['debug']('install_module_github', 'can`t get file '.$remote_module_data_loaded['structure'][$i].' from github. module can be crashed');
 							}
 						}
 					}
