@@ -66,8 +66,10 @@
 				$GLOBALS['_lib']['funcs']['debug']('get_module_data', 'module: '.$module_name.'; data: '.$file_data);
 			}
 			else {
-				$GLOBALS['_lib']['funcs']['debug']('get_module_data', 'wrong module: '.$module_name.'. deleting.');
-				$GLOBALS['_lib']['funcs']['delete_dir']($GLOBALS['_lib']['lib_path'].$module_name);
+				if($module_name != 'requirements.json.bak') {
+					$GLOBALS['_lib']['funcs']['debug']('get_module_data', 'wrong module: '.$module_name.'. deleting.');
+					$GLOBALS['_lib']['funcs']['delete_dir']($GLOBALS['_lib']['lib_path'].$module_name);
+				}
 			}
 			return $module_data;
 		},
@@ -316,17 +318,20 @@
 		},
 		'delete_dir' => function($dir_path) {
 			if (! is_dir($dir_path))
-				throw new InvalidArgumentException("$dir_path must be a directory");
-			if (substr($dir_path, strlen($dir_path) - 1, 1) != '/')
-				$dir_path .= '/';
-			$files_for_delete = glob($dir_path . '*', GLOB_MARK);
-			foreach ($files_for_delete as $file_for_delete) {
-				if (is_dir($file_for_delete))
-					self::deleteDir($file_for_delete);
-				else
-					unlink($file_for_delete);
+				// throw new InvalidArgumentException("$dir_path must be a directory");
+				unlink($dir_path);
+			else {
+				if (substr($dir_path, strlen($dir_path) - 1, 1) != '/')
+					$dir_path .= '/';
+				$files_for_delete = glob($dir_path . '*', GLOB_MARK);
+				foreach ($files_for_delete as $file_for_delete) {
+					if (is_dir($file_for_delete))
+						self::deleteDir($file_for_delete);
+					else
+						unlink($file_for_delete);
+				}
+				rmdir($dir_path);
 			}
-			rmdir($dir_path);
 		},
 	];
 
