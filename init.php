@@ -116,8 +116,10 @@
 								&& isset($global_requirements[$i]['url'])
 								&& isset($global_requirements[$i]['branch'])
 							) {
-								if($global_requirements[$i]['source'] == 'github')
+								if($global_requirements[$i]['source'] == 'github') {
+									$global_requirements[$i]['version'] = -1;
 									$GLOBALS['_lib']['funcs']['install_module_github']($global_requirements[$i]);
+								}
 							}
 						}
 						rename($GLOBALS['_lib']['lib_path'].'requirements.json', $GLOBALS['_lib']['lib_path'].'requirements.json.bak');
