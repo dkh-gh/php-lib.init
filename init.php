@@ -120,7 +120,7 @@
 									$GLOBALS['_lib']['funcs']['install_module_github']($global_requirements[$i]);
 							}
 						}
-						rename($GLOBALS['_lib']['lib_path'].'requirements.json', $GLOBALS['_lib']['lib_path'].'requirements.json.bak')
+						rename($GLOBALS['_lib']['lib_path'].'requirements.json', $GLOBALS['_lib']['lib_path'].'requirements.json.bak');
 					}
 					else
 						return false;
